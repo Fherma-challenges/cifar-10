@@ -1,5 +1,5 @@
 [{
-  "scheme": "ckks"
+  "scheme": "CKKS"
   "significant_slots_number": 10,
   "runs": [
     {
