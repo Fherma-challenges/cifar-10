@@ -7,5 +7,7 @@ import (
 
 func SolveTestcase(params *hefloat.Parameters, evk *rlwe.MemEvaluationKeySet, in *rlwe.Ciphertext) (out *rlwe.Ciphertext, err error) {
 	// Put your solution here
-	return nil, nil
+	eval := hefloat.NewEvaluator(*params, evk)
+	out, err = eval.RotateNew(in, -2)
+	return out, err
 }

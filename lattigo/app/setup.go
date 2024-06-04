@@ -26,6 +26,7 @@ func main() {
 		LogQ            []int `json:"log_q"`
 		LogP            []int `json:"log_p"`
 		LogDefaultScale int   `json:"log_default_scale"`
+		Rotation        []int `json:"indexes_for_rotation_key"`
 	}{}
 
 	dataJSON, err := os.ReadFile("config.json")
@@ -58,8 +59,19 @@ func main() {
 
 	rlk := kgen.GenRelinearizationKeyNew(sk)
 
-	evk := rlwe.NewMemEvaluationKeySet(rlk)
+	var evk *rlwe.MemEvaluationKeySet
 
+	if paramsJSON.Rotation != nil {
+		// Gen RotationKeys (Galois)
+		galEls := params.GaloisElements(paramsJSON.Rotation)
+		gks := make([]*rlwe.GaloisKey, len(galEls))
+		kgen.GenGaloisKeys(galEls, sk, gks)
+
+		// Naive in memory EvaluationKeySet
+		evk = rlwe.NewMemEvaluationKeySet(rlk, gks...)
+	} else {
+		evk = rlwe.NewMemEvaluationKeySet(rlk)
+	}
 	/* #nosec G404 */
 	r := rand.New(rand.NewSource(0))
 
